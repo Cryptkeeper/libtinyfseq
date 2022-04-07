@@ -29,7 +29,7 @@ to disable the inclusion of error strings in the build. Calls to `tf_err_str` wi
 - To minimize dependencies, libtinyfseq does not support compressed FSEQ files as may use either
   [zstd](https://github.com/facebook/zstd) or [zlib](https://www.zlib.net)
   compression. Compressed FSEQ files can be pre-decompressed using the [xLights](https://github.com/smeighan/xLights)
-  program, or you may decompress the data buffer yourself using an additional library before passing calling into
+  program, or you may decompress the data buffer yourself using an additional library before passing it to
   libtinyfseq.
 - libtinyfseq assumes data buffers are in little endian byte order.
 
@@ -47,7 +47,7 @@ for comments describing their usage.
 Two additional utility functions are provided:
 
 1. `tf_sequence_duration_seconds` for calculating the duration of a given sequence in seconds
-2. `tf_err_str` for mutating `enum tf_err_t` values into their string names
+2. `tf_err_str` for mapping `enum tf_err_t` values into their string names
 
 ## License
 
