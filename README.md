@@ -26,8 +26,8 @@ to disable the inclusion of error strings in the build. Calls to `tf_err_str` wi
 
 - libtinyfseq only supports FSEQ versions v2.x versions, with the schema initially released in 2018. Older v1.x files
   can be upgraded using the [xLights](https://github.com/smeighan/xLights) program.
-- To minimize dependencies, libtinyfseq does not support compressed FSEQ files as may use either
-  [zstd](https://github.com/facebook/zstd) or [zlib](https://www.zlib.net)
+- To minimize dependencies, libtinyfseq does not support compressed FSEQ files as they may use both
+  [zstd](https://github.com/facebook/zstd) and [zlib](https://www.zlib.net)
   compression. Compressed FSEQ files can be pre-decompressed using the [xLights](https://github.com/smeighan/xLights)
   program, or you may decompress the data buffer yourself using an additional library before passing it to
   libtinyfseq.
