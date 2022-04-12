@@ -116,7 +116,7 @@ enum tf_err_t tf_read_var_header(const uint8_t *bd, int bs, struct tf_var_header
 
 static uint32_t tf_read_uint24(const uint8_t *bd) {
     // WARNING: this assumes little endian byte order
-    return (uint32_t) (bd[0] & (bd[1] << 8) & (bd[2] << 16));
+    return (uint32_t) (bd[0] | (bd[1] << 8) | (bd[2] << 16));
 }
 
 enum tf_err_t tf_read_channel_range(const uint8_t *bd, int bs, struct tf_channel_range_t *channelRange, uint8_t **ep) {
