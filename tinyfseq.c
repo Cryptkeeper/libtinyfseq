@@ -92,7 +92,7 @@ enum tf_err_t tf_read_var_header(const uint8_t *bd, int bs, struct tf_var_header
     if (bs <= VAR_HEADER_SIZE) {
         return TF_EINVALID_VAR_HEADER_SIZE;
     } else {
-        memcpy((unsigned char *) &varHeader->size, &bd[0], 4);
+        memcpy((unsigned char *) &varHeader->size, &bd[0], VAR_HEADER_SIZE);
 
         // only attempt to read variable value if a decoding buffer (`vd`) is provided
         // `.size` already includes the 4 bytes the header consumes
