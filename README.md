@@ -19,8 +19,7 @@ If optionally installed, `install_manifest.txt` will be created, containing the 
 ## Build Configuration
 
 For devices with limited memory, a `TF_INCLUDE_ERR_STRINGS` definition is included in [CMakeLists.txt](CMakeLists.txt)
-to disable the inclusion of error strings in the build. Calls to `tf_err_str` will instead return `"NULL"` (as a string)
-.
+to disable the inclusion of error strings in the build. Calls to `tf_err_str` will instead return `"NULL"` (as a string).
 
 ## Compatibility
 
