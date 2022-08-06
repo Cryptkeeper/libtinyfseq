@@ -35,7 +35,7 @@ const char *tf_err_str(enum tf_err_t err) {
         case TF_EINVALID_MAGIC:
             return "TF_EINVALID_MAGIC (invalid magic file signature)";
         case TF_EINVALID_COMPRESSION_TYPE:
-            return "TF_EINVALID_COMPRESSION_TYPE (compressed files are not supported)";
+            return "TF_EINVALID_COMPRESSION_TYPE (unknown compression format/unmapped `tf_ctype_t` value)";
         case TF_EINVALID_VAR_HEADER_SIZE:
             return "TF_EINVALID_VAR_HEADER_SIZE (undersized `tf_var_header_t` data decoding buffer)";
         case TF_EINVALID_VAR_VALUE_SIZE:
@@ -48,6 +48,17 @@ const char *tf_err_str(enum tf_err_t err) {
 #else
     return "NULL";
 #endif
+}
+
+static inline int tf_is_known_ctype(uint8_t b) {
+    switch (b) {
+        case TF_COMPRESSION_NONE:
+        case TF_COMPRESSION_ZSTD:
+        case TF_COMPRESSION_ZLIB:
+            return 1;
+        default:
+            return 0;
+    }
 }
 
 enum tf_err_t tf_read_file_header(const uint8_t *bd, int bs, struct tf_file_header_t *header, uint8_t **ep) {
@@ -70,11 +81,15 @@ enum tf_err_t tf_read_file_header(const uint8_t *bd, int bs, struct tf_file_head
 
     // upper 4 bits contain additional compression block count data that is ignored by tinyfseq
     // mask to lower 4 bits to filter only the compression type field
-    if ((bd[20] & 0xF) != 0) {
+    const uint8_t compressionType = bd[20] & 0xF;
+    if (!tf_is_known_ctype(compressionType)) {
         return TF_EINVALID_COMPRESSION_TYPE;
     }
 
-    memcpy((unsigned char *) &header->channelRangeCount, &bd[22], 1);
+    header->compressionType = (enum tf_ctype_t) compressionType;
+
+    header->channelRangeCount = bd[22];
+
     memcpy((unsigned char *) &header->sequenceUid, &bd[24], 8);
 
     if (ep != NULL) {

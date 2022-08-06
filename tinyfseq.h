@@ -48,16 +48,23 @@ enum tf_err_t {
  */
 const char *tf_err_str(enum tf_err_t err);
 
+enum tf_ctype_t {
+    TF_COMPRESSION_NONE,
+    TF_COMPRESSION_ZSTD,
+    TF_COMPRESSION_ZLIB,
+};
+
 struct tf_file_header_t {
-    uint16_t channelDataOffset;
-    uint8_t  minorVersion;
-    uint8_t  majorVersion;
-    uint16_t variableDataOffset;
-    uint32_t channelCount;
-    uint32_t frameCount;
-    uint8_t  frameStepTimeMillis;
-    uint8_t  channelRangeCount;
-    uint64_t sequenceUid;
+    uint16_t        channelDataOffset;
+    uint8_t         minorVersion;
+    uint8_t         majorVersion;
+    uint16_t        variableDataOffset;
+    uint32_t        channelCount;
+    uint32_t        frameCount;
+    uint8_t         frameStepTimeMillis;
+    enum tf_ctype_t compressionType;
+    uint8_t         channelRangeCount;
+    uint64_t        sequenceUid;
 } __attribute__((packed));
 
 /**
