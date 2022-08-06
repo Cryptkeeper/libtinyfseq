@@ -7,6 +7,13 @@ CMakeFiles/
 Makefile
 cmake-build-debug/
 cmake_install.cmake
+.cmake/
+
+# CTest
+Testing/
+
+# Ninja
+build.ninja
 
 # Output
 build.h
