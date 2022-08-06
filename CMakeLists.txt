@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(tinyfseq
-        VERSION 1.0.1
+        VERSION 1.1.0
         DESCRIPTION "A tiny library for decoding FSEQ (.fseq) v2.0+ sequence files"
         HOMEPAGE_URL "https://github.com/Cryptkeeper/libtinyfseq"
         LANGUAGES C)
