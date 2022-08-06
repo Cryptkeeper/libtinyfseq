@@ -14,7 +14,7 @@ configure_file(${PROJECT_SOURCE_DIR}/build.h.in ${PROJECT_SOURCE_DIR}/build.h)
 
 add_library(tinyfseq tinyfseq.h tinyfseq.c)
 
-set_target_properties(tinyfseq PROPERTIES PUBLIC_HEADER "tinyfseq.h")
+set_target_properties(tinyfseq PROPERTIES PUBLIC_HEADER "tinyfseq.h;build.h")
 
 install(TARGETS tinyfseq
         LIBRARY DESTINATION lib/tinyfseq
