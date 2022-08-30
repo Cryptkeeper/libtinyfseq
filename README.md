@@ -7,7 +7,7 @@ at [Cryptkeeper/fseq-file-format](https://github.com/Cryptkeeper/fseq-file-forma
 
 ## Installation
 
-libtinyfseq uses [CMake](https://cmake.org/) for building and packaging the library.
+You may either install the library, or use `tinyfseq.h` & `tinyfseq.c` directly as a single-file library. libtinyfseq uses [CMake](https://cmake.org/) for building and packaging the library.
 
 - Generate Makefiles using `cmake .`
 - Compile the library using `make`
@@ -18,8 +18,8 @@ If optionally installed, `install_manifest.txt` will be created, containing the 
 
 ## Build Configuration
 
-For devices with limited memory, a `TF_INCLUDE_ERR_STRINGS` definition is included in [CMakeLists.txt](CMakeLists.txt)
-to disable the inclusion of error strings in the build. Calls to `tf_err_str` will instead return `"NULL"` (as a string).
+For devices with limited memory, a `TF_INCLUDE_ERR_STRINGS` setting is included in [CMakeLists.txt](CMakeLists.txt)
+to disable the inclusion of error strings in the build. Calls to `tf_err_str` will instead return `"NULL"` (as a string). You may also `#define TF_STRIP_ERR_STRINGS` prior to including `tinyfseq.h` to disable error strings without using CMake.
 
 ## Compatibility
 
@@ -37,10 +37,10 @@ to disable the inclusion of error strings in the build. Calls to `tf_err_str` wi
 libtinyfseq only defines three functions for reading the various components of a FSEQ file. See [tinyfseq.h](tinyfseq.h)
 for comments describing their usage.
 
-| Function | Schema |
-| --- | --- |
-| `tf_read_file_header` | https://github.com/Cryptkeeper/fseq-file-format#header |
-| `tf_read_var_header` | https://github.com/Cryptkeeper/fseq-file-format#variable |
+| Function                | Schema                                                       |
+| ----------------------- | ------------------------------------------------------------ |
+| `tf_read_file_header`   | https://github.com/Cryptkeeper/fseq-file-format#header       |
+| `tf_read_var_header`    | https://github.com/Cryptkeeper/fseq-file-format#variable     |
 | `tf_read_channel_range` | https://github.com/Cryptkeeper/fseq-file-format#sparse-range |
 
 Two additional utility functions are provided:

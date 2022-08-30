@@ -26,7 +26,7 @@
 #include <string.h>
 
 const char *tf_err_str(enum tf_err_t err) {
-#ifdef TF_INCLUDE_ERR_STRINGS
+#ifndef TF_STRIP_ERR_STRINGS
     switch (err) {
         case TF_OK:
             return "TF_OK (ok)";
