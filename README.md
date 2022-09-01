@@ -1,36 +1,33 @@
 # libtinyfseq
 
-A tiny library (~125 LOC) for decoding FSEQ (.fseq) v2.0+ sequence files developed and popularized by
+A single-file library (~150 LOC) for decoding FSEQ (.fseq) v2.0+ sequence files developed and popularized by
 the [fpp](https://github.com/FalconChristmas/fpp) and [xLights](https://github.com/smeighan/xLights) programs.
 Additional documentation for the file format is available
 at [Cryptkeeper/fseq-file-format](https://github.com/Cryptkeeper/fseq-file-format).
 
+A short example of including libtinyfseq and decoding a file header is available in [`example.c`](example.c).
+
 ## Installation
 
-You may either install the library, or use `tinyfseq.h` & `tinyfseq.c` directly as a single-file library. libtinyfseq uses [CMake](https://cmake.org/) for building and packaging the library.
+- Download and copy `tinyfseq.h` into your project locally, or to your toolchain's include paths
+- `#include "tinyfseq.h"` as expected (you may need to modify the path).
+- Define `TINYFSEQ_IMPLEMENTATION` in a SINGLE C/C++ source code
+  file ([more information on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
 
-- Generate Makefiles using `cmake .`
-- Compile the library using `make`
-- Optionally install the headers and compiled archive using `make install`
-- Include in your project using `#include <tinyfseq/tinyfseq.h>`
+## Library Configuration
 
-If optionally installed, `install_manifest.txt` will be created, containing the installed file paths for easy removal.
+Prior to including `tinyfseq.h`, two definition based options are available:
 
-## Build Configuration
-
-For devices with limited memory, a `TF_INCLUDE_ERR_STRINGS` setting is included in [CMakeLists.txt](CMakeLists.txt)
-to disable the inclusion of error strings in the build. Calls to `tf_err_str` will instead return `"NULL"` (as a string). You may also `#define TF_STRIP_ERR_STRINGS` prior to including `tinyfseq.h` to disable error strings without using CMake.
+1. `TINYFSEQ_MEMCPY` allows you to override the selected `memcpy` function with whatever is best for your platform (
+   currently a basic freestanding implementation, `tf_memcpy_impl`)
+2. `TINYFSEQ_STRIP_ERR_STRINGS` replaces all literal strings returned by `tf_err_str` with `"NULL"` (as a string) to
+   reduce the compiled binary size
 
 ## Compatibility
 
+- libtinyfseq uses `stdint.h` for fixed-size int types
 - libtinyfseq only supports FSEQ versions v2.x versions, with the schema initially released in 2018. Older v1.x files
   can be upgraded using the [xLights](https://github.com/smeighan/xLights) program.
-- To minimize dependencies, libtinyfseq does not support compressed FSEQ files as they may use both
-  [zstd](https://github.com/facebook/zstd) and [zlib](https://www.zlib.net)
-  compression. Compressed FSEQ files can be pre-decompressed using the [xLights](https://github.com/smeighan/xLights)
-  program, or you may decompress the data buffer yourself using an additional library before passing it to
-  libtinyfseq.
-- libtinyfseq assumes data buffers are in little endian byte order.
 
 ## Usage
 
