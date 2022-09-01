@@ -5,14 +5,14 @@ the [fpp](https://github.com/FalconChristmas/fpp) and [xLights](https://github.c
 Additional documentation for the file format is available
 at [Cryptkeeper/fseq-file-format](https://github.com/Cryptkeeper/fseq-file-format).
 
-A short example of including libtinyfseq and decoding a file header is available in [`example.c`](example.c).
-
 ## Installation
 
 - Download and copy `tinyfseq.h` into your project locally, or to your toolchain's include paths
 - `#include "tinyfseq.h"` as expected (you may need to modify the path).
-- Define `TINYFSEQ_IMPLEMENTATION` in a SINGLE C/C++ source code
-  file ([more information on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
+- Define `TINYFSEQ_IMPLEMENTATION` in a single C/C++ source code
+  file ([more info on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
+
+A short example of including libtinyfseq and decoding a file header is available in [`example.c`](example.c)
 
 ## Library Configuration
 
