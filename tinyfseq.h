@@ -23,7 +23,7 @@
  */
 /**
  * libtinyfseq
- * v2.0.0
+ * v2.1.0
  * https://github.com/Cryptkeeper/libtinyfseq
  *
  * Prior to including `tinyfseq.h`, two definition based options are available:
@@ -41,7 +41,7 @@
 
 #include <stdint.h>
 
-#define TINYFSEQ_VERSION "2.0.0"
+#define TINYFSEQ_VERSION "2.1.0"
 
 enum tf_err_t {
     TF_OK = 0,
@@ -209,7 +209,7 @@ enum tf_err_t tf_read_file_header(const uint8_t *bd, int bs, struct tf_file_head
     header->variableDataOffset  = ((uint16_t *) &bd[8])[0];
     header->channelCount        = ((uint32_t *) &bd[10])[0];
     header->frameCount          = ((uint32_t *) &bd[14])[0];
-    header->frameStepTimeMillis = bd[19];
+    header->frameStepTimeMillis = bd[18];
 
     // upper 4 bits contain additional compression block count data that is ignored by tinyfseq
     // mask to lower 4 bits to filter only the compression type field
