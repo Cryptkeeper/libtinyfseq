@@ -41,7 +41,7 @@
 
 #include <stdint.h>
 
-#define TINYFSEQ_VERSION "2.1.0"
+#define TINYFSEQ_VERSION "2.1.1"
 
 enum tf_err_t {
     TF_OK = 0,
@@ -51,6 +51,7 @@ enum tf_err_t {
     TF_EINVALID_VAR_HEADER_SIZE,
     TF_EINVALID_VAR_VALUE_SIZE,
     TF_EINVALID_CHANNEL_RANGE_SIZE,
+    TF_EINVALID_COMPRESSION_BLOCK_SIZE,
 };
 
 /**
@@ -77,6 +78,7 @@ struct tf_file_header_t {
     uint32_t        frameCount;
     uint8_t         frameStepTimeMillis;
     enum tf_ctype_t compressionType;
+    uint8_t         compressionBlockCount;
     uint8_t         channelRangeCount;
     uint64_t        sequenceUid;
 };
@@ -92,6 +94,13 @@ struct tf_file_header_t {
  * @return A `tf_err_t` value indicating an error, if any, otherwise `TF_OK`
  */
 enum tf_err_t tf_read_file_header(const uint8_t *bd, int bs, struct tf_file_header_t *header, uint8_t **ep);
+
+struct tf_compression_block_t {
+    uint32_t firstFrameId;
+    uint32_t size;
+};
+
+enum tf_err_t tf_read_compression_block(const uint8_t *bd, int bs, struct tf_compression_block_t *block, uint8_t **ep);
 
 struct tf_var_header_t {
     uint16_t size;
@@ -171,6 +180,8 @@ const char *tf_err_str(enum tf_err_t err) {
             return "TF_EINVALID_VAR_VALUE_SIZE (undersized variable value data decoding buffer)";
         case TF_EINVALID_CHANNEL_RANGE_SIZE:
             return "TF_EINVALID_CHANNEL_RANGE_SIZE (undersized `tf_channel_range_t` data decoding buffer)";
+        case TF_EINVALID_COMPRESSION_BLOCK_SIZE:
+            return "TF_EINVALID_COMPRESSION_BLOCK_SIZE (undersized `tf_compression_block_t` data decoding buffer)";
         default:
             return "unknown `tf_err_t` value";
     }
@@ -219,13 +230,31 @@ enum tf_err_t tf_read_file_header(const uint8_t *bd, int bs, struct tf_file_head
         return TF_EINVALID_COMPRESSION_TYPE;
     }
 
-    header->compressionType = (enum tf_ctype_t) compressionType;
+    header->compressionType       = (enum tf_ctype_t) compressionType;
+    header->compressionBlockCount = bd[21];
 
     header->channelRangeCount = bd[22];
     header->sequenceUid       = ((uint64_t *) &bd[24])[0];
 
     if (ep) {
         *ep = ((uint8_t *) bd) + FILE_HEADER_SIZE;
+    }
+
+    return TF_OK;
+}
+
+enum tf_err_t tf_read_compression_block(const uint8_t *bd, int bs, struct tf_compression_block_t *block, uint8_t **ep) {
+    const int COMPRESSION_BLOCK_SIZE = 8;
+
+    if (bs < COMPRESSION_BLOCK_SIZE) {
+        return TF_EINVALID_COMPRESSION_BLOCK_SIZE;
+    }
+
+    block->firstFrameId = ((uint32_t *) &bd[0])[0];
+    block->size         = ((uint32_t *) &bd[4])[0];
+
+    if (ep) {
+        *ep = ((uint8_t *) bd) + COMPRESSION_BLOCK_SIZE;
     }
 
     return TF_OK;
