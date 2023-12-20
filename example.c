@@ -42,26 +42,33 @@ static uint8_t FILE_DATA[] = {
         'U',
 };
 
-int main() {
+int main(const int argc, char **const argv) {
+    (void) argc;
+    (void) argv;
+
     printf("using tinyfseq v%s\n", TINYFSEQ_VERSION);
 
-    struct tf_file_header_t header;
+    TFHeader header;
+    TFError err;
 
     // read the "embedded" file, FILE_DATA
-    enum tf_err_t err;
-    if ((err = tf_read_file_header(FILE_DATA, sizeof(FILE_DATA), &header, NULL))) {
-        return err;
+    if ((err = TFHeader_read(FILE_DATA, sizeof(FILE_DATA), &header, NULL))) {
+        printf("libtinyfseq error: %s\n", TFError_string(err));
+
+        return 1;
     }
+
+    // TODO: use header fields, read variables, etc.
 
     // sequenceUid is an uint64_t that normally stores a timestamp
     // instead it carries an 8-byte string message
     // this assert call validates the decoded header prior to printing the char values
     assert(header.sequenceUid == 6147230170719669321);
 
-    int bit_idx;
-    for (bit_idx = 0; bit_idx < 64; bit_idx += 8) {
-        uint64_t bit_mask = ((uint64_t) 0xFFu) << bit_idx;
-        printf("%c", (uint8_t) ((header.sequenceUid & bit_mask) >> bit_idx));
+    for (int i = 0; i < 64; i += 8) {
+        const uint64_t mask = (uint64_t) 0xFFu << i;
+
+        printf("%c", (uint8_t) ((header.sequenceUid & mask) >> i));
     }
 
     printf("\n");

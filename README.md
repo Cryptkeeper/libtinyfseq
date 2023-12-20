@@ -1,27 +1,14 @@
 # libtinyfseq
 
-A single-file library (~150 LOC) for decoding FSEQ (.fseq) v2.0+ sequence files developed and popularized by
-the [fpp](https://github.com/FalconChristmas/fpp) and [xLights](https://github.com/smeighan/xLights) programs.
-Additional documentation for the file format is available
-at [Cryptkeeper/fseq-file-format](https://github.com/Cryptkeeper/fseq-file-format).
+A single-file library (~150 LOC) for decoding FSEQ (.fseq) v2.0+ sequence files developed and popularized by the [fpp](https://github.com/FalconChristmas/fpp) and [xLights](https://github.com/smeighan/xLights) programs. Additional documentation for the file format is available at [Cryptkeeper/fseq-file-format](https://github.com/Cryptkeeper/fseq-file-format).
 
 ## Installation
 
 - Download and copy `tinyfseq.h` into your project locally, or to your toolchain's include paths
 - `#include "tinyfseq.h"` as expected (you may need to modify the path).
-- Define `TINYFSEQ_IMPLEMENTATION` in a single C/C++ source code
-  file ([more info on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
+- Define `TINYFSEQ_IMPLEMENTATION` in a single C/C++ source code file ([more info on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
 
 A short example of including libtinyfseq and decoding a file header is available in [`example.c`](example.c)
-
-## Library Configuration
-
-Prior to including `tinyfseq.h`, two definition based options are available:
-
-1. `TINYFSEQ_MEMCPY` allows you to override the selected `memcpy` function with whatever is best for your platform (
-   currently a basic freestanding implementation, `tf_memcpy_impl`)
-2. `TINYFSEQ_STRIP_ERR_STRINGS` replaces all literal strings returned by `tf_err_str` with `"NULL"` (as a string) to
-   reduce the compiled binary size
 
 ## Compatibility
 
@@ -31,19 +18,16 @@ Prior to including `tinyfseq.h`, two definition based options are available:
 
 ## Usage
 
-libtinyfseq only defines three functions for reading the various components of a FSEQ file. See [tinyfseq.h](tinyfseq.h)
-for comments describing their usage.
+libtinyfseq provides decoding functions for the following components of a FSEQ file. See [tinyfseq.h](tinyfseq.h) for comments describing their specific usage.
 
-| Function                | Schema                                                       |
-| ----------------------- | ------------------------------------------------------------ |
-| `tf_read_file_header`   | https://github.com/Cryptkeeper/fseq-file-format#header       |
-| `tf_read_var_header`    | https://github.com/Cryptkeeper/fseq-file-format#variable     |
-| `tf_read_channel_range` | https://github.com/Cryptkeeper/fseq-file-format#sparse-range |
+| Function                  | Schema                                                            | Type                 |
+| ------------------------- | ----------------------------------------------------------------- | -------------------- |
+| `TFHeader_read`           | https://github.com/Cryptkeeper/fseq-file-format#header            | `TFHeader`           |
+| `TFVarHeader_read`        | https://github.com/Cryptkeeper/fseq-file-format#variable          | `TFVarHeader`        |
+| `TFChannelRange_read`     | https://github.com/Cryptkeeper/fseq-file-format#sparse-range      | `TFChannelRange`     |
+| `TFCompressionBlock_read` | https://github.com/Cryptkeeper/fseq-file-format#compression-block | `TFCompressionBlock` |
 
-Two additional utility functions are provided:
-
-1. `tf_sequence_duration_seconds` for calculating the duration of a given sequence in seconds
-2. `tf_err_str` for mapping `enum tf_err_t` values into their string names
+All decoding functions return a `TFError` value, with `TF_OK` indicating success. If an error occurs, the value will be non-zero. An error string can be retrieved via `TFError_string` (and should _not_ be freed by the caller).
 
 ## License
 
