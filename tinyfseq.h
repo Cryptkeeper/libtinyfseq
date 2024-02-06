@@ -1,5 +1,5 @@
 /**
- * libtinyfseq v3.0.0 (2023-12-19)
+ * libtinyfseq v3.1.0 (2024-02-06)
  * https://github.com/Cryptkeeper/libtinyfseq
  * MIT License
  *
@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#define TINYFSEQ_VERSION "3.0.0"
+#define TINYFSEQ_VERSION "3.1.0"
 
 typedef enum tf_err_t {
     TF_OK = 0,
