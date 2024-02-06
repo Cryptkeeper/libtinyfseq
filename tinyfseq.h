@@ -18,6 +18,7 @@ typedef enum tf_err_t {
     TF_EINVALID_MAGIC,
     TF_EINVALID_COMPRESSION_TYPE,
     TF_EINVALID_BUFFER_SIZE,
+    TF_EINVALID_VAR_SIZE,
 } TFError;
 
 /**
@@ -145,6 +146,8 @@ const char *TFError_string(const TFError err) {
             return "TF_EINVALID_COMPRESSION_TYPE (unknown compression identifier)";
         case TF_EINVALID_BUFFER_SIZE:
             return "TF_EINVALID_BUFFER_SIZE (undersized data decoding buffer argument)";
+        case TF_EINVALID_VAR_SIZE:
+            return "TF_EINVALID_VAR_SIZE (invalid variable size in header)";
         default:
             return "unknown TFError value";
     }
@@ -228,13 +231,18 @@ TFError TFVarHeader_read(const uint8_t *const bd,
 
     varHeader->size = ((uint16_t *) &bd[0])[0];
 
+    if (varHeader->size <= VAR_HEADER_SIZE) return TF_EINVALID_VAR_SIZE;
+
     __builtin_memcpy(varHeader->id, &bd[2], sizeof(varHeader->id));
 
     // only attempt to read variable value if a decoding buffer (`vd`) is provided
     // `.size` already includes the 4 bytes the header consumes
     if (vd) {
-        const int valueSize = varHeader->size - VAR_HEADER_SIZE;
+        // ensure the source buffer has enough data to read the variable value
+        if (bs < varHeader->size) return TF_EINVALID_VAR_SIZE;
 
+        // ensure the destination buffer is large enough to store the variable value
+        const int valueSize = varHeader->size - VAR_HEADER_SIZE;
         if (vs < valueSize) return TF_EINVALID_BUFFER_SIZE;
 
         __builtin_memcpy(vd, &bd[VAR_HEADER_SIZE], valueSize);
