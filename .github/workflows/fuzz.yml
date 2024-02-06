@@ -1,0 +1,37 @@
+name: Fuzz
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Debug
+
+jobs:
+  Fuzz:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        test: [ "TFChannelRange_read", "TFCompressionBlock_read", "TFHeader_read" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER=clang -DENABLE_FUZZING=TRUE
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --target fuzz_${{matrix.test}} --config ${{env.BUILD_TYPE}}
+
+      - name: Fuzz
+        working-directory: ${{github.workspace}}/build
+        run: |
+          mkdir -p corpus
+          ./fuzz_${{matrix.test}} -max_total_time=30 -print_final_stats=1 corpus
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.test}}_corpus
+          path: ${{github.workspace}}/build/corpus

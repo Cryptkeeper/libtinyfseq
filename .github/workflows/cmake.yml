@@ -1,0 +1,80 @@
+name: CMake
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+
+jobs:
+  Ubuntu:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler: [ "clang", "gcc" ]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER=${{matrix.compiler}}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: CTest
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{env.BUILD_TYPE}}
+
+  Windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          pacboy: >-
+            gcc:p
+            cmake:p
+            ninja:p
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja
+
+      - name: Build
+        run: cmake --build build --config ${{env.BUILD_TYPE}}
+
+      - name: CTest
+        working-directory: ${{github.workspace}}\build
+        run: ctest -C ${{env.BUILD_TYPE}}
+
+  macOS:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: CTest
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{env.BUILD_TYPE}}

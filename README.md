@@ -8,7 +8,7 @@ A single-file library (~150 LOC) for decoding FSEQ (.fseq) v2.0+ sequence files 
 - `#include "tinyfseq.h"` as expected (you may need to modify the path).
 - Define `TINYFSEQ_IMPLEMENTATION` in a single C/C++ source code file ([more info on using single-file libraries](https://github.com/nothings/stb#how-do-i-use-these-libraries))
 
-A short example of including libtinyfseq and decoding a file header is available in [`example.c`](example.c)
+A short example of including libtinyfseq and printing the library version is available in the form of a [`test/build.c`](unit test).
 
 ## Compatibility
 
