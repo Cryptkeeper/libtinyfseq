@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        test: [ "TFChannelRange_read", "TFCompressionBlock_read", "TFHeader_read" ]
+        test: [ "TFChannelRange_read", "TFCompressionBlock_read", "TFHeader_read", "TFVarHeader_read" ]
 
     steps:
       - uses: actions/checkout@v4

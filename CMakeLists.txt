@@ -23,4 +23,8 @@ if (ENABLE_FUZZING)
     add_executable(fuzz_TFHeader_read fuzz/TFHeader_read.c)
     target_link_libraries(fuzz_TFHeader_read "-fsanitize=fuzzer")
     target_compile_options(fuzz_TFHeader_read PRIVATE "-fsanitize=fuzzer")
+
+    add_executable(fuzz_TFVarHeader_read fuzz/TFVarHeader_read.c)
+    target_link_libraries(fuzz_TFVarHeader_read "-fsanitize=fuzzer")
+    target_compile_options(fuzz_TFVarHeader_read PRIVATE "-fsanitize=fuzzer")
 endif ()
