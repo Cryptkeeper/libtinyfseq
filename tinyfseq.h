@@ -1,5 +1,5 @@
 /**
- * libtinyfseq v3.1.0 (2024-02-06)
+ * libtinyfseq v3.2.0 (2024-05-19)
  * https://github.com/Cryptkeeper/libtinyfseq
  * MIT License
  *
@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#define TINYFSEQ_VERSION "3.1.0"
+#define TINYFSEQ_VERSION "3.2.0"
 
 typedef enum tf_err_t {
     TF_OK = 0,
@@ -60,10 +60,8 @@ typedef struct tf_header_t {
  * @param ep End pointer which upon a successful return will point to the end of the structure within `bd` (may be NULL)
  * @return A `TFError` value indicating an error, if any, otherwise `TF_OK`
  */
-TFError TFHeader_read(const uint8_t *bd,
-                      int bs,
-                      TFHeader *header,
-                      uint8_t **ep);
+TFError
+TFHeader_read(const uint8_t *bd, int bs, TFHeader *header, uint8_t **ep);
 
 typedef struct tf_compression_block_t {
     uint32_t firstFrameId;
@@ -143,9 +141,11 @@ const char *TFError_string(const TFError err) {
         case TF_EINVALID_MAGIC:
             return "TF_EINVALID_MAGIC (invalid magic file signature)";
         case TF_EINVALID_COMPRESSION_TYPE:
-            return "TF_EINVALID_COMPRESSION_TYPE (unknown compression identifier)";
+            return "TF_EINVALID_COMPRESSION_TYPE (unknown compression "
+                   "identifier)";
         case TF_EINVALID_BUFFER_SIZE:
-            return "TF_EINVALID_BUFFER_SIZE (undersized data decoding buffer argument)";
+            return "TF_EINVALID_BUFFER_SIZE (undersized data decoding buffer "
+                   "argument)";
         case TF_EINVALID_VAR_SIZE:
             return "TF_EINVALID_VAR_SIZE (invalid variable size in header)";
         default:
@@ -174,27 +174,36 @@ TFError TFHeader_read(const uint8_t *const bd,
 
     if (bs < HEADER_SIZE) return TF_EINVALID_BUFFER_SIZE;
 
-    if (bd[0] != 'P' || bd[1] != 'S' || bd[2] != 'E' || bd[3] != 'Q') return TF_EINVALID_MAGIC;
+    if (bd[0] != 'P' || bd[1] != 'S' || bd[2] != 'E' || bd[3] != 'Q')
+        return TF_EINVALID_MAGIC;
 
-    header->channelDataOffset   = ((uint16_t *) &bd[4])[0];
-    header->minorVersion        = bd[6];
-    header->majorVersion        = bd[7];
-    header->variableDataOffset  = ((uint16_t *) &bd[8])[0];
-    header->channelCount        = ((uint32_t *) &bd[10])[0];
-    header->frameCount          = ((uint32_t *) &bd[14])[0];
+    __builtin_memcpy(&header->channelDataOffset, &bd[4],
+                     sizeof(header->channelDataOffset));
+
+    header->minorVersion = bd[6];
+    header->majorVersion = bd[7];
+
+    __builtin_memcpy(&header->variableDataOffset, &bd[8],
+                     sizeof(header->variableDataOffset));
+    __builtin_memcpy(&header->channelCount, &bd[10],
+                     sizeof(header->channelCount));
+    __builtin_memcpy(&header->frameCount, &bd[14], sizeof(header->frameCount));
+
     header->frameStepTimeMillis = bd[18];
 
     // upper 4 bits contain additional compression block count data that is ignored by tinyfseq
     // mask to lower 4 bits to filter only the compression type field
     const uint8_t compressionType = bd[20] & 0xF;
 
-    if (!TFCompressionType_valid(compressionType)) return TF_EINVALID_COMPRESSION_TYPE;
+    if (!TFCompressionType_valid(compressionType))
+        return TF_EINVALID_COMPRESSION_TYPE;
 
     header->compressionType       = (TFCompressionType) compressionType;
     header->compressionBlockCount = bd[21];
 
     header->channelRangeCount = bd[22];
-    header->sequenceUid       = ((uint64_t *) &bd[24])[0];
+
+    __builtin_memcpy(&header->sequenceUid, &bd[24], sizeof(header->sequenceUid));
 
     if (ep) *ep = (uint8_t *) bd + HEADER_SIZE;
 
@@ -209,8 +218,8 @@ TFError TFCompressionBlock_read(const uint8_t *const bd,
 
     if (bs < COMPRESSION_BLOCK_SIZE) return TF_EINVALID_BUFFER_SIZE;
 
-    block->firstFrameId = ((uint32_t *) &bd[0])[0];
-    block->size         = ((uint32_t *) &bd[4])[0];
+    __builtin_memcpy(&block->firstFrameId, &bd[0], sizeof(block->firstFrameId));
+    __builtin_memcpy(&block->size, &bd[4], sizeof(block->size));
 
     if (ep) *ep = (uint8_t *) bd + COMPRESSION_BLOCK_SIZE;
 
@@ -229,7 +238,7 @@ TFError TFVarHeader_read(const uint8_t *const bd,
     // an empty variable should be at least 5 bytes
     if (bs <= VAR_HEADER_SIZE) return TF_EINVALID_BUFFER_SIZE;
 
-    varHeader->size = ((uint16_t *) &bd[0])[0];
+    __builtin_memcpy(&varHeader->size, &bd[0], sizeof(varHeader->size));
 
     if (varHeader->size <= VAR_HEADER_SIZE) return TF_EINVALID_VAR_SIZE;
 
